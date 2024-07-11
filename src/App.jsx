@@ -1,6 +1,8 @@
 import * as React from 'react';
-import Map, { Layer ,FullscreenControl,GeolocateControl} from 'react-map-gl';
-
+import Map, { Layer, FullscreenControl, GeolocateControl } from 'react-map-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import mapboxgl from 'mapbox-gl';
+import MapboxTraffic from '@mapbox/mapbox-gl-traffic';
 
 const symbolLayer = {
   'id': 'add-3d-buildings',
@@ -31,7 +33,7 @@ const symbolLayer = {
     ],
     'fill-extrusion-opacity': 0.6
   }
-}
+};
 
 const geolocateStyle = {
   float: 'right',
@@ -40,16 +42,20 @@ const geolocateStyle = {
   zIndex: 999
 };
 
-
-// center: [-74.0066, 40.7135],
-//             zoom: 15.5,
-//             pitch: 45,
-//             bearing: -17.6,
-//             container: 'map',
-//             antialias: true
 function App() {
+  const mapRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (mapRef.current) {
+      const map = mapRef.current.getMap();
+      const trafficControl = new MapboxTraffic();
+      map.addControl(trafficControl, 'top-left');
+    }
+  }, []);
+
   return (
     <Map
+      ref={mapRef}
       style={{ width: '100%', height: '100vh' }}
       mapboxAccessToken="pk.eyJ1Ijoic2FoaWxka3VuIiwiYSI6ImNsd3M5dXc0OTAxNDQyaXF6dmVleW8zdWMifQ.5mF06nBcoEjasgvvZpBmYg"
       initialViewState={{
@@ -58,21 +64,18 @@ function App() {
         zoom: 14,
         bearing: -17.6,
         pitch: 45
-
       }}
-
       antialias={true}
       mapStyle="mapbox://styles/sahildkun/clwsacx1t01a901qs6ilob257"
     >
-       
-      <Layer  {...symbolLayer} />
+      <Layer {...symbolLayer} />
+      {/* Uncomment if you want to use geolocate control */}
       {/* <GeolocateControl
-      showUserLocation={true}
+        showUserLocation={true}
         style={geolocateStyle}
-        positionOptions={{enableHighAccuracy: true}}
+        positionOptions={{ enableHighAccuracy: true }}
         trackUserLocation={true}
       /> */}
-      
     </Map>
   );
 }
